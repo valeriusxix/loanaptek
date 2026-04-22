@@ -116,7 +116,7 @@ const Signup = () => {
               onChange={handleChange}
               required/>
 
-              <button type="submit" disabled= {loading}>
+              <button type="submit" disabled={loading}>
                 {loading ? "Signing Up..." : "Sign Up"}
               </button>
 
