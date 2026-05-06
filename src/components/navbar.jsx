@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "./Navbar.css";
+import "./navbar.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
