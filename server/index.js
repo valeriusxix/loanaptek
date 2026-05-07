@@ -13,11 +13,13 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "loanaptech-xi.vercel.app", 
+      "https://loanaptech-psi.vercel.app",
+      "https://loanaptech-ivory.vercel.app",  // add this
     ],
     credentials: true,
   })
 );
+
 app.use(express.json());
 app.use(cookieParser());
 
