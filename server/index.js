@@ -13,10 +13,6 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-<<<<<<< HEAD
-=======
-      "https://loanaptech-psi.vercel.app",
->>>>>>> 19ceb3e0d534838a1655943a43f2e3bbd61dfae9
       "https://loanaptech-vi.vercel.app",  
     ],
     credentials: true,
