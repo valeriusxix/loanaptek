@@ -13,7 +13,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://loanaptech-ivory.vercel.app", 
+      "loanaptech-xi.vercel.app", 
     ],
     credentials: true,
   })
