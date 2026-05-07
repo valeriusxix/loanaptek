@@ -17,26 +17,15 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    const user = await User.create({
-      name,
-      email,
-      password,
-      phone,
-    });
+    const user = await User.create({ name, email, password, phone });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "30d",
     });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
-
     res.status(201).json({
       success: true,
+      token, // return token in body
       user: {
         id: user._id,
         name: user.name,
@@ -55,9 +44,7 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Please provide email and password" });
+      return res.status(400).json({ error: "Please provide email and password" });
     }
 
     const user = await User.findOne({ email });
@@ -74,16 +61,9 @@ router.post("/login", async (req, res) => {
       expiresIn: "30d",
     });
 
-    // Set HTTP-only cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
-
     res.json({
       success: true,
+      token, // return token in body
       user: {
         id: user._id,
         name: user.name,
@@ -102,10 +82,6 @@ router.get("/me", auth, async (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
-  res.cookie("token", "", {
-    httpOnly: true,
-    expires: new Date(0),
-  });
   res.json({ success: true, message: "Logged out successfully" });
 });
 

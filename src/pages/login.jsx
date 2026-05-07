@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import './login.css';
 
-const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech-n5ia.onrender.com";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -38,7 +38,6 @@ const Login = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                credentials: "include",
                 body: JSON.stringify({
                     email: formData.email,
                     password: formData.password
@@ -48,6 +47,7 @@ const Login = () => {
             const data = await response.json();
 
             if (response.ok) {
+                localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
                 navigate("/dashboard");
             } else {
@@ -90,7 +90,7 @@ const Login = () => {
                 </button>
 
                 <div className="signup-link">
-                    <Link to="./signup">Don't have an account? Sign Up</Link>
+                    <Link to="/signup">Don't have an account? Sign Up</Link>
                 </div>
             </form>
         </div>

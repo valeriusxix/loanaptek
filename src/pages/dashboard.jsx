@@ -2,52 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./dashboard.css";
 
-const API_URL = import.meta.env.VITE_API_URL || " https://loanaptech-n5ia.onrender.com";
-
-const fetchDashboardData = async (setUser, setStats, setLoans, setLoading, setError, navigate) => {
-  try {
-    setLoading(true);
-
-    // Fetch current user
-    const userResponse = await fetch(`${API_URL}/api/auth/me`, {
-      credentials: "include",
-    });
-
-    if (!userResponse.ok) {
-      throw new Error("Not Authenticated");
-    }
-    const userData = await userResponse.json();
-    setUser(userData.user);
-
-    // Fetch stats
-    const statsResponse = await fetch(`${API_URL}/api/loans/dashboard/stats`, {
-      credentials: "include",
-    });
-
-    if (statsResponse.ok) {
-      const statsData = await statsResponse.json();
-      setStats(statsData.stats);
-    }
-
-    // Fetch loans
-    const loanResponse = await fetch(`${API_URL}/api/loans/my-loans`, {
-      credentials: "include",
-    });
-
-    if (loanResponse.ok) {
-      const loanData = await loanResponse.json();
-      setLoans(loanData.loans || []);
-    }
-  } catch (error) {
-    console.error("Dashboard fetch error:", error);
-    setError("Failed to load dashboard data");
-    if (error.message === "Not Authenticated") {
-      navigate("/login");
-    }
-  } finally {
-    setLoading(false);
-  }
-};
+const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech-n5ia.onrender.com";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -58,24 +13,63 @@ const Dashboard = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchDashboardData(setUser, setStats, setLoans, setLoading, setError, navigate);
-  }, [navigate]);
+    fetchDashboardData();
+  }, []);
 
-  const handleLogout = async () => {
+  const fetchDashboardData = async () => {
     try {
-      await fetch(`${API_URL}/api/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-      localStorage.removeItem("user");
-      navigate("/login");
+      setLoading(true);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const headers = {
+        "Authorization": `Bearer ${token}`
+      };
+
+      // Fetch current user
+      const userResponse = await fetch(`${API_URL}/api/auth/me`, { headers });
+
+      if (!userResponse.ok) {
+        navigate("/login");
+        return;
+      }
+      const userData = await userResponse.json();
+      setUser(userData.user);
+
+      // Fetch stats
+      const statsResponse = await fetch(`${API_URL}/api/loans/dashboard/stats`, { headers });
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        setStats(statsData.stats);
+      }
+
+      // Fetch loans
+      const loanResponse = await fetch(`${API_URL}/api/loans/my-loans`, { headers });
+      if (loanResponse.ok) {
+        const loanData = await loanResponse.json();
+        setLoans(loanData.loans || []);
+      }
+
     } catch (err) {
-      console.error("Logout error.", err);
+      console.error("Dashboard fetch error:", err);
+      setError("Failed to load dashboard data");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   const handleApplyLoan = () => {
-    navigate("/apply-loan");
+    navigate("/applyloan");
   };
 
   if (loading) {
@@ -118,11 +112,11 @@ const Dashboard = () => {
           </div>
           <div className="stat-card">
             <h3>Total Borrowed</h3>
-            <div className="stat-value">${stats.totalBorrowed?.toLocaleString()}</div> {/* fixed: tolocaleString */}
+            <div className="stat-value">${stats.totalBorrowed?.toLocaleString()}</div>
           </div>
           <div className="stat-card">
             <h3>Total Repayment</h3>
-            <div className="stat-value">${stats.totalRepayment?.toLocaleString()}</div> {/* fixed: tolocaleString */}
+            <div className="stat-value">${stats.totalRepayment?.toLocaleString()}</div>
           </div>
         </div>
       )}
@@ -137,7 +131,7 @@ const Dashboard = () => {
         {loans.length > 0 ? (
           <table className="loans-table">
             <thead>
-              <tr> {/* fixed: was using <tr> instead of <th> for headers */}
+              <tr>
                 <th>Amount</th>
                 <th>Purpose</th>
                 <th>Duration</th>
@@ -154,7 +148,7 @@ const Dashboard = () => {
                   <td>{loan.duration} months</td>
                   <td>${loan.monthlyPayment?.toLocaleString()}</td>
                   <td>
-                    <span className={`status-badge status-${loan.status}`}> {/* fixed: was using single quotes */}
+                    <span className={`status-badge status-${loan.status}`}>
                       {loan.status}
                     </span>
                   </td>

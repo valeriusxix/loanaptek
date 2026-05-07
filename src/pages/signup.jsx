@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./signup.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech-n5ia.onrender.com";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -50,7 +50,6 @@ const Signup = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        credentials: "include",
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
@@ -65,8 +64,11 @@ const Signup = () => {
         throw new Error(data.error || "Registration failed");
       }
 
-      alert("Registration successful! Please login.");
-      navigate("/login");
+      // Store token and user, go straight to dashboard
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      navigate("/dashboard");
+
     } catch (err) {
       setError(err.message);
     } finally {
