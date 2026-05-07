@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../components/navbar.jsx";
 import "./applyloan.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || " https://loanaptech-n5ia.onrender.com";
 
 const ApplyLoan = () => {
   const [formData, setFormData] = useState({
