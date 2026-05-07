@@ -11,10 +11,12 @@ connectDB();
 // Middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173", 
-      "https://loanaptech-psi.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://loanaptech-ivory.vercel.app", 
+    ],
     credentials: true,
-  }),
+  })
 );
 app.use(express.json());
 app.use(cookieParser());
