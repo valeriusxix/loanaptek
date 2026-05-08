@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import "./loandetails.css";
+
+const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech-n5ia.onrender.com";
 
 function LoanDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [loan, setLoan] = useState(null);
   const [error, setError] = useState("");
 
@@ -13,10 +16,21 @@ function LoanDetails() {
 
   const fetchLoan = async () => {
     try {
-      const res = await fetch(`https://loanaptech-n5ia.onrender.com/api/loans/${id}`, {
-        credentials: "include",
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const res = await fetch(`${API_URL}/api/loans/${id}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
       });
+
       const data = await res.json();
+
       if (!res.ok) {
         setError(data.error || "Loan not found");
         return;
@@ -68,49 +82,40 @@ function LoanDetails() {
     <div className="details-container">
       <div className="details-card">
 
-        {/* Header */}
         <div className={`details-header ${statusClass}`}>
           <h1>Loan Application</h1>
           <div className="status-badge">
             {statusEmoji} {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
           </div>
         </div>
-        
 
-        {/* Loan ID */}
         <div className="details-id">
           Loan Reference <span className="id-number">#{loan._id.slice(-8).toUpperCase()}</span>
         </div>
 
-        {/* Details Grid */}
         <div className="details-grid">
           <div className="detail-item">
             <span className="detail-label">Loan Amount</span>
             <span className="detail-value detail-amount">{formatAmount(loan.amount)}</span>
           </div>
-
           <div className="detail-item">
             <span className="detail-label">Duration</span>
             <span className="detail-value">{loan.duration} months</span>
           </div>
-
           <div className="detail-item">
             <span className="detail-label">Monthly Payment</span>
             <span className="detail-value">{formatAmount(loan.monthlyPayment)}</span>
           </div>
-
           <div className="detail-item">
             <span className="detail-label">Total Repayment</span>
             <span className="detail-value">{formatAmount(loan.totalPayment)}</span>
           </div>
-
           {loan.interestRate && (
             <div className="detail-item">
               <span className="detail-label">Interest Rate</span>
               <span className="detail-value">{loan.interestRate}% p.a.</span>
             </div>
           )}
-
           {loan.createdAt && (
             <div className="detail-item details-date">
               <span className="detail-label">Date Applied</span>
@@ -119,7 +124,6 @@ function LoanDetails() {
           )}
         </div>
 
-        {/* Purpose */}
         {loan.purpose && (
           <div className="details-section">
             <span className="detail-label">Purpose</span>
@@ -127,10 +131,9 @@ function LoanDetails() {
           </div>
         )}
 
-        {/* Actions */}
         <div className="details-actions">
           <Link to="/dashboard" className="btn-dashboard">Back to Dashboard</Link>
-          <Link to="/apply" className="btn-secondary">Apply for Another</Link>
+          <Link to="/applyloan" className="btn-secondary">Apply for Another</Link>
         </div>
 
       </div>

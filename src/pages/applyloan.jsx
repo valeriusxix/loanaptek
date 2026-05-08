@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./applyloan.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech-n5ia.onrender.com";
 
 const ApplyLoan = () => {
   const navigate = useNavigate();
