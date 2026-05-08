@@ -75,7 +75,7 @@ function Navbar() {
           </li>
 
           <li role="none">
-            <Link to="/loans" className={isActive("/loans") ? "nav-link active" : "nav-link"} role="menuitem">
+            <Link to="/loans/:_id" className={isActive("/loans") ? "nav-link active" : "nav-link"} role="menuitem">
               Loans
             </Link>
           </li>

@@ -34,7 +34,7 @@ export default function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/loan/:id" element= {<LoanDetails/>} />
+              <Route path="/loans/:_id" element= {<LoanDetails/>} />
             </Routes>
           </main>
           <Footer />
