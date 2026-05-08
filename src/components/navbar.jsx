@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./navbar.css";
 
-const API_URL = import.meta.env.VITE_API_URL || " https://loanaptech-n5ia.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech.onrender.com";
 
 function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -19,8 +19,17 @@ function Navbar() {
   const checkAuth = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setUser(null);
+        return;
+      }
+
       const response = await fetch(`${API_URL}/api/auth/me`, {
-        credentials: "include"
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
       });
 
       if (response.ok) {
@@ -30,7 +39,6 @@ function Navbar() {
         setUser(null);
       }
     } catch (_error) {
-      console.error("Auth check error:", _error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -39,20 +47,11 @@ function Navbar() {
 
   const isActive = (path) => location.pathname === path;
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/auth/logout`, {
-        method: "POST",
-        credentials: "include"
-      });
-
-      if (response.ok) {
-        setUser(null);
-        navigate("/");
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/");
   };
 
   if (loading) return null;
@@ -61,12 +60,10 @@ function Navbar() {
     <nav className="navbar" aria-label="Main navigation">
       <div className="navbar-container">
 
-        {/* Logo */}
         <Link to="/" className="navbar-logo" aria-label="LoanAptech home">
           LoanAptech
         </Link>
 
-        {/* Desktop Menu */}
         <ul className="navbar-menu" role="menubar">
           <li role="none">
             <Link to="/" className={isActive("/") ? "nav-link active" : "nav-link"} role="menuitem">
@@ -75,7 +72,7 @@ function Navbar() {
           </li>
 
           <li role="none">
-            <Link to="/loans/:_id" className={isActive("/loans") ? "nav-link active" : "nav-link"} role="menuitem">
+            <Link to="/dashboard" className={isActive("/dashboard") ? "nav-link active" : "nav-link"} role="menuitem">
               Loans
             </Link>
           </li>
@@ -92,7 +89,6 @@ function Navbar() {
             </Link>
           </li>
 
-          {/* Logged-in only */}
           {user && (
             <li role="none">
               <Link to="/applyloan" className={isActive("/applyloan") ? "nav-link active" : "nav-link"} role="menuitem">
@@ -103,13 +99,12 @@ function Navbar() {
 
           {user && (
             <li role="none">
-              <Link to="/dashboard" className="nav-cta" role="menuitem" aria-label="Go to your dashboard">
+              <Link to="/dashboard" className="nav-cta" role="menuitem">
                 Dashboard
               </Link>
             </li>
           )}
 
-          {/* Logged-out only */}
           {!user && (
             <>
               <li role="none">
@@ -117,7 +112,6 @@ function Navbar() {
                   Login
                 </Link>
               </li>
-
               <li role="none">
                 <Link to="/signup" className="nav-cta" role="menuitem">
                   Sign Up
@@ -126,22 +120,15 @@ function Navbar() {
             </>
           )}
 
-          {/* Logout */}
           {user && (
             <li role="none">
-              <button
-                onClick={handleLogout}
-                className="logout-btn"
-                role="menuitem"
-                aria-label="Logout from your account"
-              >
+              <button onClick={handleLogout} className="logout-btn" role="menuitem">
                 Logout
               </button>
             </li>
           )}
         </ul>
 
-        {/* Mobile Toggle */}
         <button
           className="navbar-toggle"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -155,28 +142,16 @@ function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       <div
         id="mobile-menu"
         className={`mobile-menu ${mobileMenuOpen ? "open" : ""}`}
         role="navigation"
         aria-label="Mobile navigation"
       >
-        <Link to="/" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
-          Home
-        </Link>
-
-        <Link to="/loans" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
-          Loans
-        </Link>
-
-        <Link to="/about" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
-          About
-        </Link>
-
-        <Link to="/contact" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
-          Contact
-        </Link>
+        <Link to="/" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+        <Link to="/dashboard" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>Loans</Link>
+        <Link to="/about" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>About</Link>
+        <Link to="/contact" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>Contact</Link>
 
         {user && (
           <Link to="/applyloan" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
@@ -192,24 +167,15 @@ function Navbar() {
 
         {!user && (
           <>
-            <Link to="/login" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>
-              Login
-            </Link>
-
-            <Link to="/signup" className="mobile-cta" onClick={() => setMobileMenuOpen(false)}>
-              Sign Up
-            </Link>
+            <Link to="/login" className="mobile-link" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+            <Link to="/signup" className="mobile-cta" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
           </>
         )}
 
         {user && (
           <button
             className="mobile-logout"
-            onClick={() => {
-              handleLogout();
-              setMobileMenuOpen(false);
-            }}
-            aria-label="Logout from your account"
+            onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
           >
             Logout
           </button>
