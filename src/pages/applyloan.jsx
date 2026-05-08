@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import "../components/navbar.jsx";
+import { useNavigate } from "react-router-dom";
 import "./applyloan.css";
 
-const API_URL = import.meta.env.VITE_API_URL || " https://loanaptech-n5ia.onrender.com";
+const API_URL = import.meta.env.VITE_API_URL || "https://loanaptech.onrender.com";
 
 const ApplyLoan = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     amount: '',
     tenure: '',
@@ -44,17 +44,24 @@ const ApplyLoan = () => {
     setIsLoading(true);
 
     try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
       const response = await fetch(`${API_URL}/api/loans/apply`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           amount: formData.amount,
           duration: formData.tenure,
           purpose: formData.purpose,
         }),
-        credentials: "include",
       });
 
       const data = await response.json();
@@ -103,62 +110,60 @@ const ApplyLoan = () => {
   }
 
   return (
-    <>
-      <div className="apply-container">
-        <div className="apply-card">
-          <h1 className="apply-title">Apply for a Loan</h1>
+    <div className="apply-container">
+      <div className="apply-card">
+        <h1 className="apply-title">Apply for a Loan</h1>
 
-          <form className="apply-form" onSubmit={handleSubmit}>
-            {error && <div className="error-message">{error}</div>}
+        <form className="apply-form" onSubmit={handleSubmit}>
+          {error && <div className="error-message">{error}</div>}
 
-            <div className="input-group">
-              <label htmlFor="amount">Loan Amount ($)</label>
-              <input
-                type="number"
-                id="amount"
-                name="amount"
-                value={formData.amount}
-                onChange={handleChange}
-                placeholder="e.g., 5000"
-                required
-              />
-            </div>
+          <div className="input-group">
+            <label htmlFor="amount">Loan Amount ($)</label>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+              placeholder="e.g., 5000"
+              required
+            />
+          </div>
 
-            <div className="input-group">
-              <label htmlFor="tenure">Loan Tenure</label>
-              <select id="tenure" name="tenure" value={formData.tenure} onChange={handleChange} required>
-                <option value="">Select tenure</option>
-                <option value="3">3 Months</option>
-                <option value="6">6 Months</option>
-                <option value="12">12 Months</option>
-                <option value="18">18 Months</option>
-                <option value="24">24 Months</option>
-                <option value="36">36 Months</option>
-                <option value="48">48 Months</option>
-                <option value="60">60 Months</option>
-              </select>
-            </div>
+          <div className="input-group">
+            <label htmlFor="tenure">Loan Tenure</label>
+            <select id="tenure" name="tenure" value={formData.tenure} onChange={handleChange} required>
+              <option value="">Select tenure</option>
+              <option value="3">3 Months</option>
+              <option value="6">6 Months</option>
+              <option value="12">12 Months</option>
+              <option value="18">18 Months</option>
+              <option value="24">24 Months</option>
+              <option value="36">36 Months</option>
+              <option value="48">48 Months</option>
+              <option value="60">60 Months</option>
+            </select>
+          </div>
 
-            <div className="input-group">
-              <label htmlFor="purpose">Purpose of Loan</label>
-              <textarea
-                id="purpose"
-                name="purpose"
-                value={formData.purpose}
-                onChange={handleChange}
-                placeholder="e.g., Home renovation, Business expansion, Education..."
-                rows="5"
-                required
-              />
-            </div>
+          <div className="input-group">
+            <label htmlFor="purpose">Purpose of Loan</label>
+            <textarea
+              id="purpose"
+              name="purpose"
+              value={formData.purpose}
+              onChange={handleChange}
+              placeholder="e.g., Home renovation, Business expansion, Education..."
+              rows="5"
+              required
+            />
+          </div>
 
-            <button type="submit" className="apply-submit-btn" disabled={isLoading}>
-              {isLoading ? 'Submitting...' : 'Submit Application'}
-            </button>
-          </form>
-        </div>
+          <button type="submit" className="apply-submit-btn" disabled={isLoading}>
+            {isLoading ? 'Submitting...' : 'Submit Application'}
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 
