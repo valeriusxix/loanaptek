@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "../components/navbar.jsx";
 import "./applyloan.css";
 
@@ -103,22 +104,6 @@ const ApplyLoan = () => {
 
   return (
     <>
-      <nav className="navbar">
-        <div className="nav-container">
-          <div className="logo">Aptech</div>
-          <div className="nav-links">
-            <a href="#">Home</a>
-            <a href="#" className="active">Loans</a>
-            <a href="#">About</a>
-            <a href="#">Contact</a>
-          </div>
-          <div className="auth-buttons">
-            <a href="#" className="login-btn">Login</a>
-            <a href="#" className="signup-btn">Sign Up</a>
-          </div>
-        </div>
-      </nav>
-
       <div className="apply-container">
         <div className="apply-card">
           <h1 className="apply-title">Apply for a Loan</h1>
