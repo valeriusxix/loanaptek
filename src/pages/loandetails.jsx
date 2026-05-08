@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import "./loanDetails.css";
+import "./loandetails.css";
 
 function LoanDetails() {
   const { id } = useParams();
