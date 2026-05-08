@@ -140,22 +140,22 @@ const Dashboard = () => {
                 <th>Applied Date</th>
               </tr>
             </thead>
-            <tbody>
-              {loans.map((loan) => (
-                <tr key={loan._id}>
-                  <td>${loan.amount?.toLocaleString()}</td>
-                  <td>{loan.purpose}</td>
-                  <td>{loan.duration} months</td>
-                  <td>${loan.monthlyPayment?.toLocaleString()}</td>
-                  <td>
-                    <span className={`status-badge status-${loan.status}`}>
-                      {loan.status}
-                    </span>
-                  </td>
-                  <td>{new Date(loan.appliedDate).toLocaleDateString()}</td>
+           <tbody>
+               {loans.map((loan) => (
+                <tr key={loan._id} onClick={() => navigate(`/loans/${loan._id}`)} style={{cursor: 'pointer'}}>
+                <td>${loan.amount?.toLocaleString()}</td>
+                <td>{loan.purpose}</td>
+                <td>{loan.duration} months</td>
+                <td>${loan.monthlyPayment?.toLocaleString()}</td>
+                <td>
+                <span className={`status-badge status-${loan.status}`}>
+               {loan.status}
+                </span>
+               </td>
+                <td>{new Date(loan.appliedDate).toLocaleDateString()}</td>
                 </tr>
-              ))}
-            </tbody>
+            ))}
+           </tbody>
           </table>
         ) : (
           <div className="no-loans">
